@@ -129,9 +129,14 @@ public class UserLoginServiceImpl implements UserLoginService {
                     .realName(userDO.getRealName())
                     .build();
             String accessToken = JWTUtil.generateAccessToken(userInfo);
-            UserLoginRespDTO actual = new UserLoginRespDTO(userInfo.getUserId(), userInfo.getUsername(), userDO.getRealName(), accessToken);
-            distributedCache.put(accessToken, JSON.toJSONString(actual), 30, TimeUnit.MINUTES);
-            return actual;
+            UserLoginRespDTO userLogin = UserLoginRespDTO.builder()
+                    .userId(userInfo.getUserId())
+                    .username(userInfo.getUsername())
+                    .realName(userInfo.getRealName())
+                    .accessToken(accessToken)
+                    .build();
+            distributedCache.put(accessToken, JSON.toJSONString(userLogin), 30, TimeUnit.MINUTES);
+            return userLogin;
         }
         throw new ServiceException("账号不存在或密码错误");
     }
